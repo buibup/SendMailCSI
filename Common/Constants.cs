@@ -8,7 +8,8 @@ namespace SendEmailCSI.Common
 {
     public class Constants
     {
-        public static string commandCache112 = ConfigurationManager.ConnectionStrings["Server112ConnectionString"].ToString();
+        public static string Server108DataTest = ConfigurationManager.ConnectionStrings["Server108DataTest"].ToString();
+        public static string cache112ConnectionString = ConfigurationManager.ConnectionStrings["Server112ConnectionString"].ToString();
         public static string mailAddress = ConfigurationManager.AppSettings["MailAddress"];
         public static string mailTo = ConfigurationManager.AppSettings["MailTo"];
         public static string mailCC = ConfigurationManager.AppSettings["MailCC"];

@@ -16,6 +16,9 @@ namespace SendEmailCSI.Common
         static string[] mailCCList = { };
         static string mailBody = "";
         static string attachmentsFile = "";
+        static string subject = "";
+        static string smtp = "";
+        static string mailFrom = "";
 
         public static Tuple<string, DateTime> SendMailResult(string subject, string body,
                                      string[] mailTo, string[] mailCC,
@@ -26,35 +29,40 @@ namespace SendEmailCSI.Common
             DateTime sendDate = new DateTime();
 
             // new mail
-            MailMessage mailMsg = new MailMessage();
-            // attachment file
-            Attachment attachment = new Attachment(attachmentFile);
-            // set maill address
-            mailMsg.From = new MailAddress(mailAddress);
+            var mail = new MailMessage()
+            {
+                From = new MailAddress(mailAddress),
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
+
+            };
+
+            if (!string.IsNullOrEmpty(attachmentFile))
+            {
+                // attachment file
+                Attachment attachment = new Attachment(attachmentFile);
+                mail.Attachments.Add(attachment);
+            }
+            
 
             // add mail to from array 
-            foreach (var mail in mailTo)
+            foreach (var m in mailTo)
             {
-                mailMsg.To.Add(mail);
+                mail.To.Add(m);
             }
 
             // add mail cc from array
-            foreach (var mail in mailCC)
+            foreach (var m in mailCC)
             {
-                mailMsg.CC.Add(mail);
+                mail.CC.Add(m);
             }
-
-            // set content
-            mailMsg.Subject = subject;
-            mailMsg.Body += body;
-            mailMsg.Attachments.Add(attachment);
-            mailMsg.IsBodyHtml = true;
 
             try
             {
                 SmtpClient smtp = new SmtpClient(smtpClient);
                 smtp.Port = 25;
-                smtp.Send(mailMsg);
+                smtp.Send(mail);
                 result = "Completed";
                 sendDate = DateTime.Now;
             }
@@ -115,7 +123,7 @@ namespace SendEmailCSI.Common
             }
             catch (Exception ex)
             {
-                throw;
+                
             }
 
 
@@ -182,9 +190,11 @@ namespace SendEmailCSI.Common
                     EMail = sm.EMail,
                     PAADMDischgDate = sm.PAADMDischgDate,
                     SendDate = send.Item2,
-                    SendFlag = send.Item1
+                    SendFlag = send.Item1,
+                    Link = link,
+                    OldNew = sm.OldNew
                 };
-
+                resultList.Add(sendMail);
             }
 
             return resultList;
@@ -192,17 +202,32 @@ namespace SendEmailCSI.Common
 
         public static Tuple<string, DateTime> SendMail(string send, string link)
         {
-            attachmentsFile = MailSender.GetAttachmentsFile(Constants.pathAttachment);
-            mailBody = MailSender.GetBody("test");
-            mailToList = MailSender.splitMailToList(send);
-            //mailCCList = MailSender.splitMailToList(Constants.mailCC);
+            Tuple<string, DateTime> result;
+            try
+            {
+                subject = ConfigurationManager.AppSettings["subject"];
+                attachmentsFile = (string.IsNullOrEmpty(Constants.pathAttachment)) ? attachmentsFile : Constants.pathAttachment;
+                mailBody = ConfigurationManager.AppSettings["Message"].Replace(System.Environment.NewLine,"<br />");
+                mailBody = mailBody.Replace("#[Link]", link);
+                mailToList = MailSender.splitMailToList(send);
+                mailFrom = Constants.mailAddress;
+                smtp = Constants.smtpClient;
 
-            Tuple<string, DateTime> result = MailSender.SendMailResult(Constants.mailSubject, mailBody,
-                                            mailToList, mailCCList,
-                                            attachmentsFile, Constants.mailAddress,
-                                            Constants.smtpClient);
+                //mailCCList = MailSender.splitMailToList(Constants.mailCC);
 
-            return result;
+                result = MailSender.SendMailResult(subject, mailBody,
+                                                mailToList, mailCCList,
+                                                attachmentsFile, mailFrom,
+                                                smtp);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+
+                return Tuple.Create(ex.ToString(), DateTime.Now);
+            }
+            
         }
 
 

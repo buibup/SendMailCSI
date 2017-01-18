@@ -18,6 +18,6 @@ namespace SendEmailCSI.Models
         public string NationCode { get; set; }
         public string NationDESC { get; set; }
         public string EMail { get; set; }
-        public char OldNew { get; set; }
+        public string OldNew { get; set; }
     }
 }
