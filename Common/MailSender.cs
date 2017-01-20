@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace SendEmailCSI.Common
 {
+    #region MailSender class use about mail
     public class MailSender
     {
-
+        #region Set variable
         static string[] mailToList = { };
         static string[] mailCCList = { };
         static string mailBody = "";
@@ -19,7 +20,9 @@ namespace SendEmailCSI.Common
         static string subject = "";
         static string smtp = "";
         static string mailFrom = "";
+        #endregion
 
+        #region return tuble(status send mail, datetime send mail)
         public static Tuple<string, DateTime> SendMailResult(string subject, string body,
                                      string[] mailTo, string[] mailCC,
                                      string attachmentFile, string mailAddress,
@@ -35,7 +38,6 @@ namespace SendEmailCSI.Common
                 Subject = subject,
                 Body = body,
                 IsBodyHtml = true
-
             };
 
             if (!string.IsNullOrEmpty(attachmentFile))
@@ -44,7 +46,6 @@ namespace SendEmailCSI.Common
                 Attachment attachment = new Attachment(attachmentFile);
                 mail.Attachments.Add(attachment);
             }
-            
 
             // add mail to from array 
             foreach (var m in mailTo)
@@ -74,15 +75,15 @@ namespace SendEmailCSI.Common
 
             return Tuple.Create(result, sendDate);
         }
+        #endregion
 
+        #region return status send mail -> true , false
         public static bool SendMailSuccess(string subject, string body,
                                             string[] mailTo, string[] mailCC,
                                             string attachmentFile, string mailAddress,
                                             string smtp, int port)
         {
             var flag = false;
-
-            
             
             var mail = new MailMessage()
             {
@@ -90,7 +91,6 @@ namespace SendEmailCSI.Common
                 Subject = subject,
                 Body = body,
                 IsBodyHtml = true
-
             };
 
             // add all mail to
@@ -121,16 +121,16 @@ namespace SendEmailCSI.Common
                     flag = true;
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                
+                return flag;
             }
-
 
             return flag;
         }
+        #endregion
 
-        
+        #region Convert string mail to array mail 
         public static string[] splitMailToList(string mails)
         {
             string[] result = { };
@@ -145,7 +145,9 @@ namespace SendEmailCSI.Common
 
             return result;
         }
+        #endregion
 
+        #region return attachments file name
         public static string GetAttachmentsFile(string path)
         {
 
@@ -153,24 +155,9 @@ namespace SendEmailCSI.Common
 
             return file;
         }
-        public static string GetBody(string stringMessage)
-        {
+        #endregion
 
-            StringBuilder sb = new System.Text.StringBuilder();
-
-            sb.Append("<html><head><title>Samitivej Hospitals - MSU Exchange Cart Report</title>");
-            sb.Append("</head><body>");
-            sb.Append("<table border=0 width=600 ");
-            sb.Append("<tr><td>" + "<font face='tahoma'  color='#0000FF'>Dear </font><font face='tahoma'> All </font></td></tr>");
-            sb.Append("<tr><td>" + "&nbsp;" + "</td></tr>");
-            sb.Append("<tr><td>" + "<font face='tahoma'  color='#0000FF'> หากได้รับเมลล์นี้ รบกวนช่วยแจ้งกลับด้วยตอนนี้อยู่ในขั้นตอนทดสอบ E-mail . Please Notify New Report has been uploaded to Exchange Cart Report</A>  ,Please Dowload attachments to see Detail </font></td></tr>");
-            sb.Append("<tr><td>" + stringMessage + " ");
-            sb.Append("</td></tr></table>");
-            sb.Append("</body></html>");
-
-            return sb.ToString();
-        }
-
+        #region return result list affter send mail
         public static List<SendMail> SendMailListResult(List<SendMail> sendMails)
         {
             var resultList = new List<SendMail>();
@@ -194,12 +181,15 @@ namespace SendEmailCSI.Common
                     Link = link,
                     OldNew = sm.OldNew
                 };
+
                 resultList.Add(sendMail);
             }
 
             return resultList;
         }
+        #endregion
 
+        #region return tuple(status sendmail, datatime sendmail)
         public static Tuple<string, DateTime> SendMail(string send, string link)
         {
             Tuple<string, DateTime> result;
@@ -224,12 +214,11 @@ namespace SendEmailCSI.Common
             }
             catch (Exception ex)
             {
-
                 return Tuple.Create(ex.ToString(), DateTime.Now);
             }
-            
         }
-
+        #endregion
 
     }
+    #endregion
 }

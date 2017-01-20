@@ -1,17 +1,12 @@
 ﻿using InterSystems.Data.CacheClient;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
-using System.Data.Odbc;
-using System.Linq;
-using System.Text;
 
 namespace SendEmailCSI.DA.InterSystems
 {
+    #region IntersystemsDa class use for access data from cache intersystems
     public class InterSystemsDA
     {
-
+        #region return data table from procedure SVNHSendEmailCSI2_GetData
         public static DataTable GetDTSendEmailCSIData(string dateFrom, string dateTo, string connectionString)
         {
             try
@@ -26,7 +21,9 @@ namespace SendEmailCSI.DA.InterSystems
                 return null;
             }
         }
+        #endregion
 
+        #region return data table from command string : require(command string, connection string)
         public static DataTable DataTableBindDataCommand(string cmdString, string connectionString)
         {
             DataTable dt = new DataTable();
@@ -42,7 +39,9 @@ namespace SendEmailCSI.DA.InterSystems
 
             return dt;
         }
+        #endregion
 
+        #region return data set from command string : require(command string, connection string)
         public static DataSet DataSetBindDataCommand(string cmdString, string connectionString)
         {
             DataSet ds = new DataSet();
@@ -58,5 +57,7 @@ namespace SendEmailCSI.DA.InterSystems
 
             return ds;
         }
+        #endregion
     }
+    #endregion
 }

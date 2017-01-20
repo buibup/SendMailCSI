@@ -77,6 +77,7 @@
             // 
             // txtSmtp
             // 
+            this.txtSmtp.Enabled = false;
             this.txtSmtp.Location = new System.Drawing.Point(60, 75);
             this.txtSmtp.Name = "txtSmtp";
             this.txtSmtp.Size = new System.Drawing.Size(348, 20);

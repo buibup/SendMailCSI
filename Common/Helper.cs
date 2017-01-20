@@ -5,16 +5,16 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace SendEmailCSI.Common
 {
+    #region Helper class use for help to manage data
     public static class Helper
     {
+        #region Convert List<T> to data table
         public static List<T> DataTableToList<T>(this DataTable table) where T : class, new()
         {
             List<T> list = new List<T>();
-
             try
             {
                 foreach (var row in table.AsEnumerable())
@@ -28,7 +28,7 @@ namespace SendEmailCSI.Common
                             PropertyInfo propertyInfo = obj.GetType().GetProperty(prop.Name);
                             propertyInfo.SetValue(obj, Convert.ChangeType(row[prop.Name], propertyInfo.PropertyType), null);
                         }
-                        catch (Exception ex)
+                        catch (Exception )
                         {
                             continue;
                         }
@@ -37,12 +37,14 @@ namespace SendEmailCSI.Common
                 }
                 return list;
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 return null;
             }
         }
+        #endregion
 
+        #region Convert list sendmail to data talbe -> uses fastmember library
         public static DataTable SendMailListToDataTable(List<SendMail> patientsSendMail)
         {
             DataTable dt = new DataTable();
@@ -52,7 +54,9 @@ namespace SendEmailCSI.Common
             }
             return dt;
         }
+        #endregion
 
+        #region Convert list sentmail to data table
         public static DataTable SendMailDataGridView(List<SendMail> patiens)
         {
             DataTable dt = new DataTable();
@@ -67,41 +71,17 @@ namespace SendEmailCSI.Common
             dt.Columns.Add("SendFlag", typeof(string));
             dt.Columns.Add("Link", typeof(string));
 
-
             foreach (var p in patiens)
             {
-                var sendDate = p.SendDate.Year == DateTime.Now.Year ? p.SendDate.ToString("dd/MM/yyyy") : "";
+                var sendDate = p.SendDate.Year == DateTime.Now.Year ? p.SendDate.ToString("dd/MM/yyyy hh:mm:ss") : "";
                 dt.Rows.Add(p.PapmiNo, p.AdmNo, p.NationDESC, p.EMail, p.OldNew, p.PAADMDischgDate.ToString("dd/MM/yyyy"), sendDate, p.SendFlag, p.Link);
             }
 
             return dt;
         }
+        #endregion
 
-        public static DataTable GetDataTableFromObject(object[] objects)
-        {
-            if(objects !=null && objects.Length > 0)
-            {
-                Type T = objects[0].GetType();
-                DataTable dt = new DataTable(T.Name);
-                foreach(PropertyInfo pi in T.GetProperties())
-                {
-                    dt.Columns.Add(new DataColumn(pi.Name));
-                }
-                foreach(var o in objects)
-                {
-                    DataRow dr = dt.NewRow();
-                    foreach(DataColumn dc in dt.Columns)
-                    {
-                        dr[dc.ColumnName] = o.GetType().GetProperty(dc.ColumnName).GetValue(o, null);
-                    }
-                    dt.Rows.Add(dr);
-                }
-                return dt;
-            }
-            return null;
-        }
-
-        // convert ListSendMail object to datatable
+        #region Convert list<T> object to datatable
         public static DataTable ObjectToDataTable<T>(IEnumerable<T> list)
         {
             Type type = typeof(T);
@@ -125,7 +105,9 @@ namespace SendEmailCSI.Common
 
             return dt;
         }
+        #endregion
 
+        #region convert datable from cache to list paitent
         public static List<Patient> DataTableToListPatient(DataTable dt)
         {
             var patients = new List<Patient>(dt.Rows.Count);
@@ -152,14 +134,16 @@ namespace SendEmailCSI.Common
                     };
                     patients.Add(patient);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     continue;
                 }
             }
             return patients;
         }
+        #endregion
 
+        #region return list sendmail between different list patient(cache) and list sendmails(sql server) : condition by hn
         public static List<SendMail> GetDataSendMailList(List<Patient> patients, List<SendMail> sendMails)
         {
             var sendMailsList = new List<SendMail>();
@@ -185,18 +169,9 @@ namespace SendEmailCSI.Common
 
             return sendMailsList;
         }
+        #endregion
 
-        public static List<SendMail> SendMailForSurvey(List<SendMail> sendmailList)
-        {
-            var result = new List<SendMail>();
-
-
-
-            return result;
-        }
-
-
-
+        #region return string link url
         public static string GetLinkSurvey(string nationCode, string OldNew)
         {
             string link = "";
@@ -225,6 +200,7 @@ namespace SendEmailCSI.Common
                 ผู้ป่วยใหม่-> https://www.surveymonkey.com/r/KQ2YSSR 
 
              */
+
             #region Link for old patient 
             if (OldNew.ToUpper().ToString() == "O")
             {
@@ -254,6 +230,7 @@ namespace SendEmailCSI.Common
                 }
             }
             #endregion
+
             #region Link for new patient
             else
             {
@@ -285,5 +262,8 @@ namespace SendEmailCSI.Common
             #endregion
             return link;
         }
+        #endregion
+
     }
+    #endregion
 }

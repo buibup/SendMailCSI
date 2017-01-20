@@ -6,6 +6,7 @@ using System.Text;
 
 namespace SendEmailCSI.Common
 {
+    #region Constants class use for get data from app config 
     public class Constants
     {
         public static string Server108DataTest = ConfigurationManager.ConnectionStrings["Server108DataTest"].ToString();
@@ -17,4 +18,5 @@ namespace SendEmailCSI.Common
         public static string mailSubject = ConfigurationManager.AppSettings["subject"];
         public static string pathAttachment = ConfigurationManager.AppSettings["pathAttachment"];
     }
+    #endregion
 }

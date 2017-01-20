@@ -3,14 +3,19 @@ using SendEmailCSI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SendEmailCSI.Common
 {
+    #region DataAccess class work with entity framework
     public class DataAccess
     {
+
+        #region Set Variable
         List<SendMail> sendmails = new List<SendMail>();
         static SendMailContext dbcontext = new SendMailContext();
+        #endregion
+
+        #region return list sendmail object from sql server : where by month
         public static List<SendMail> GetDataByMonth(string month)
         {
             using(var context = new SendMailContext())
@@ -23,7 +28,9 @@ namespace SendEmailCSI.Common
                 return patients;
             }
         }
+        #endregion
 
+        #region Save list sendmail object to sql server 
         public static void SendMailListToDb(List<SendMail> mailList)
         {
             using(var dbContext = new SendMailContext())
@@ -43,5 +50,7 @@ namespace SendEmailCSI.Common
                 }
             }
         }
+        #endregion
     }
+    #endregion
 }
