@@ -1,4 +1,5 @@
 ﻿using InterSystems.Data.CacheClient;
+using System;
 using System.Data;
 
 namespace SendEmailCSI.DA.InterSystems
@@ -16,7 +17,7 @@ namespace SendEmailCSI.DA.InterSystems
                 dt = DataTableBindDataCommand(CommandText, connectionString); 
                 return dt;
             }
-            catch
+            catch(Exception )
             {
                 return null;
             }

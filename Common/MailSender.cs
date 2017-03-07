@@ -84,7 +84,7 @@ namespace SendEmailCSI.Common
                                             string smtp, int port)
         {
             var flag = false;
-            
+
             var mail = new MailMessage()
             {
                 From = new MailAddress(mailAddress),
@@ -114,7 +114,7 @@ namespace SendEmailCSI.Common
 
             try
             {
-                using(var smtpClient = new SmtpClient(smtp))
+                using (var smtpClient = new SmtpClient(smtp))
                 {
                     smtpClient.Port = port;
                     smtpClient.Send(mail);
@@ -164,8 +164,19 @@ namespace SendEmailCSI.Common
 
             foreach (var sm in sendMails)
             {
-                string link = Helper.GetLinkSurvey(sm.NationCode, sm.OldNew);
-                Tuple<string, DateTime> send = SendMail(sm.EMail, link);
+
+                string link = string.Empty;
+                Tuple<string, DateTime> send;
+
+                if (sm.AdmNo.Substring(1, 2) == "12")
+                {
+                    link = Helper.GetLinkSurvey(sm.NationCode, sm.OldNew, Constants.snh);
+                }
+                else
+                {
+                    link = Helper.GetLinkSurvey(sm.NationCode, sm.OldNew, Constants.svh);
+                }
+                send = SendMail(sm.EMail, link, sm.NationCode);
 
                 var sendMail = new SendMail()
                 {
@@ -190,31 +201,63 @@ namespace SendEmailCSI.Common
         #endregion
 
         #region return tuple(status sendmail, datatime sendmail)
-        public static Tuple<string, DateTime> SendMail(string send, string link)
+        public static Tuple<string, DateTime> SendMail(string send, string link, string nationCode)
         {
             Tuple<string, DateTime> result;
-            try
+            var mailTH = DataAccess.GetSettingMail(DataAccess.GetLanguagesId(ConfigurationManager.AppSettings["thaicode"]));
+            var mailEN = DataAccess.GetSettingMail(DataAccess.GetLanguagesId(ConfigurationManager.AppSettings["engcode"]));
+
+            if (nationCode.ToUpper() == "TH")
             {
-                subject = ConfigurationManager.AppSettings["subject"];
-                attachmentsFile = (string.IsNullOrEmpty(Constants.pathAttachment)) ? attachmentsFile : Constants.pathAttachment;
-                mailBody = ConfigurationManager.AppSettings["Message"].Replace(System.Environment.NewLine,"<br />");
-                mailBody = mailBody.Replace("#[Link]", link);
-                mailToList = MailSender.splitMailToList(send);
-                mailFrom = Constants.mailAddress;
-                smtp = Constants.smtpClient;
+                try
+                {
+                    subject = mailTH.Subject;
+                    attachmentsFile = (string.IsNullOrEmpty(Constants.pathAttachment)) ? attachmentsFile : Constants.pathAttachment;
+                    mailBody = mailTH.MailBody;
+                    mailBody = mailBody.Replace("#[Link]", link);
+                    mailToList = MailSender.splitMailToList(send);
+                    mailFrom = mailTH.MailFrom;
+                    smtp = mailTH.SmtpClient;
 
-                //mailCCList = MailSender.splitMailToList(Constants.mailCC);
+                    //mailCCList = MailSender.splitMailToList(Constants.mailCC);
 
-                result = MailSender.SendMailResult(subject, mailBody,
-                                                mailToList, mailCCList,
-                                                attachmentsFile, mailFrom,
-                                                smtp);
+                    result = MailSender.SendMailResult(subject, mailBody,
+                                                    mailToList, mailCCList,
+                                                    attachmentsFile, mailFrom,
+                                                    smtp);
 
-                return result;
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    return Tuple.Create(ex.ToString(), DateTime.Now);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                return Tuple.Create(ex.ToString(), DateTime.Now);
+                try
+                {
+                    subject = mailEN.Subject;
+                    attachmentsFile = (string.IsNullOrEmpty(Constants.pathAttachment)) ? attachmentsFile : Constants.pathAttachment;
+                    mailBody = mailEN.MailBody;
+                    mailBody = mailBody.Replace("#[Link]", link);
+                    mailToList = MailSender.splitMailToList(send);
+                    mailFrom = mailEN.MailFrom;
+                    smtp = mailEN.SmtpClient;
+
+                    //mailCCList = MailSender.splitMailToList(Constants.mailCC);
+
+                    result = MailSender.SendMailResult(subject, mailBody,
+                                                    mailToList, mailCCList,
+                                                    attachmentsFile, mailFrom,
+                                                    smtp);
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    return Tuple.Create(ex.ToString(), DateTime.Now);
+                }
             }
         }
         #endregion

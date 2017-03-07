@@ -3,6 +3,7 @@ using SendEmailCSI.DA.InterSystems;
 using SendEmailCSI.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Threading;
 using System.Windows.Forms;
@@ -27,6 +28,8 @@ namespace SendEmailCSI
         #region FormLoad
         private void Form1_Load(object sender, EventArgs e)
         {
+            #region TestSendMail
+            /*
             // Set datenow add day -1 to dateimepicker
             dateTimePickerFrom.Value = DateTime.Now.AddDays(-1);
             dateTimePickerTo.Value = DateTime.Now.AddDays(-1);
@@ -37,7 +40,23 @@ namespace SendEmailCSI
             // Load and show data to datagridview
             ProgressLoadDataDialog();
 
-            btnSendMail.Enabled = dt.Rows.Count > 0 ? btnSendMail.Enabled = true : btnSendMail.Enabled = false;
+            if (dt != null)
+            {
+                if (dt.Rows.Count > 0)
+                {
+                    btnSendMail.Enabled = dt.Rows.Count > 0 ? btnSendMail.Enabled = true : btnSendMail.Enabled = false;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Data Table Send Mail CSI is null please check again !!");
+                return;
+            }
+            */
+            #endregion
+
+            SendMailCSI();
+
         }
         #endregion
 
@@ -118,16 +137,19 @@ namespace SendEmailCSI
                 /** 
                  <summary>get data from cache by procedure</summary>
                  */
-                var dtPatients = InterSystemsDA.GetDTSendEmailCSIData(dateStringFrom, dateStringTo, Constants.Server108DataTest);
+                var dtPatients = InterSystemsDA.GetDTSendEmailCSIData(dateStringFrom, dateStringTo, Constants.cache112ConnectionString);
 
                 //connvert datatable to paient model
                 var patientsToModel = dtPatients.DataTableToList<Patient>();
+
+                // distinct list by papmino
+                var patientData = Helper.GetDistinctPapmiNoFromPatientList(patientsToModel);
 
                 //get data sendmail by current month from sql server by entity framework
                 var sendMailsSql = DataAccess.GetDataByMonth(DateTime.Now.Month.ToString());
 
                 //check data different by hn between cache database and sql server database for send mail
-                patientsSendMail = Helper.GetDataSendMailList(patientsToModel, sendMailsSql);
+                patientsSendMail = Helper.GetDataSendMailList(patientData, sendMailsSql);
 
                 if (patientsSendMail.Count > 0)
                 {
@@ -137,7 +159,7 @@ namespace SendEmailCSI
 
                 return dt;
             }
-            catch (Exception )
+            catch (Exception)
             {
                 return null;
                 //MessageBox.Show(ex.ToString());
@@ -227,5 +249,40 @@ namespace SendEmailCSI
             }
         }
         #endregion
+
+        private void SendMailCSI()
+        {
+            #region Load
+            // Set datenow add day -1 to dateimepicker
+            dateTimePickerFrom.Value = DateTime.Now.AddDays(-1);
+            dateTimePickerTo.Value = DateTime.Now.AddDays(-1);
+
+            // Close send mail button
+            btnSendMail.Enabled = false;
+
+            // Load and show data to datagridview
+            ProgressLoadDataDialog();
+
+            if (dt != null)
+            {
+                if (dt.Rows.Count > 0)
+                {
+                    btnSendMail.Enabled = dt.Rows.Count > 0 ? btnSendMail.Enabled = true : btnSendMail.Enabled = false;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Data Table Send Mail CSI is null please check again !!");
+                return;
+            }
+
+            #endregion
+
+            #region SendMail
+            ProgressSendMailDialog();
+            #endregion
+
+            this.Close();
+        }
     }
 }

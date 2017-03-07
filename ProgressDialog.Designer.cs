@@ -38,15 +38,15 @@
             this.lblMessage.ForeColor = System.Drawing.Color.DarkGreen;
             this.lblMessage.Location = new System.Drawing.Point(12, 9);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(113, 26);
+            this.lblMessage.Size = new System.Drawing.Size(367, 26);
             this.lblMessage.TabIndex = 0;
-            this.lblMessage.Text = "Loading ...";
+            this.lblMessage.Text = "Loading Send Mail CSI Processing...";
             // 
             // ProgressDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(139, 48);
+            this.ClientSize = new System.Drawing.Size(413, 48);
             this.Controls.Add(this.lblMessage);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MaximizeBox = false;

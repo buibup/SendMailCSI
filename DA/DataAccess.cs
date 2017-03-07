@@ -51,6 +51,36 @@ namespace SendEmailCSI.Common
             }
         }
         #endregion
+
+        public static List<Languages> GetLanguageList()
+        {
+            return dbcontext.Languages.ToList();
+        }
+
+        public static List<SettingMail> GetSettingMailList()
+        {
+            return dbcontext.SettingMails.ToList();
+        }
+
+        public static SettingMail GetSettingMail(int LanguagesId)
+        {
+            var result = dbcontext.SettingMails.Where(r => r.LanguagesId == LanguagesId).FirstOrDefault<SettingMail>();
+
+            return result;
+        }
+
+        public static int GetLanguagesId(string code)
+        {
+            int result = 0;
+
+            if (!string.IsNullOrEmpty(code))
+            {
+                result = dbcontext.Languages.First(r => r.Code == code).LanguagesId;
+            }
+
+            return result;
+        }
+        
     }
     #endregion
 }

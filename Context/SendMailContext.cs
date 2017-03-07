@@ -15,6 +15,8 @@ namespace SendEmailCSI.Context
         }
 
         public DbSet<SendMail> SendMails { get; set; }
+        public DbSet<SettingMail> SettingMails { get; set; }
+        public DbSet<Languages> Languages { get; set; }
     }
     #endregion
 }

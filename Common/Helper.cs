@@ -28,7 +28,7 @@ namespace SendEmailCSI.Common
                             PropertyInfo propertyInfo = obj.GetType().GetProperty(prop.Name);
                             propertyInfo.SetValue(obj, Convert.ChangeType(row[prop.Name], propertyInfo.PropertyType), null);
                         }
-                        catch (Exception )
+                        catch (Exception)
                         {
                             continue;
                         }
@@ -37,7 +37,7 @@ namespace SendEmailCSI.Common
                 }
                 return list;
             }
-            catch (Exception )
+            catch (Exception)
             {
                 return null;
             }
@@ -171,8 +171,16 @@ namespace SendEmailCSI.Common
         }
         #endregion
 
-        #region return string link url
-        public static string GetLinkSurvey(string nationCode, string OldNew)
+        public static List<Patient> GetDistinctPapmiNoFromPatientList(List<Patient> listPatient)
+        {
+
+            var results = listPatient.GroupBy(x => x.PapmiNo).Select(x => x.First()).ToList();
+
+            return results;
+        }
+
+        #region return string link url 
+        public static string GetLinkSurvey(string nationCode, string OldNew, string site)
         {
             string link = "";
 
@@ -201,65 +209,112 @@ namespace SendEmailCSI.Common
 
              */
 
-            #region Link for old patient 
-            if (OldNew.ToUpper().ToString() == "O")
+            if (site.ToUpper() == "SNH")
             {
-                switch (nationCode.ToUpper())
-                {
-                    case "TH":
-                        link = "https://www.surveymonkey.com/r/WCH72Q9";
-                        break;
-                    case "AR":
-                        link = "https://www.surveymonkey.com/r/7BDVXDF";
-                        break;
-                    case "JP":
-                        link = "https://www.surveymonkey.com/r/DTZKWB8";
-                        break;
-                    case "MR":
-                        link = "https://www.surveymonkey.com/r/V3PXPKD";
-                        break;
-                    case "CNSVH":
-                        link = "https://www.surveymonkey.com/r/KQL9RBM";
-                        break;
-                    case "CNSNH":
-                        link = "https://www.surveymonkey.com/r/KQWLBZZ";
-                        break;
-                    default:
-                        link = "https://www.surveymonkey.com/r/QXKV68J";
-                        break;
-                }
-            }
-            #endregion
+                #region snh link
 
-            #region Link for new patient
+                #region link comment
+                /*
+                 *  ภาษาไทย(ผู้ป่วยรายใหม่)->https://www.surveymonkey.com/r/8L7SHRP
+                    ภาษาไทย(ผู้ป่วยรายเก่า)->https://www.surveymonkey.com/r/88Z3H23
+                    ภาษาอังกฤษ(ผู้ป่วยรายใหม่)->https://www.surveymonkey.com/r/887DDVC
+                    ภาษาอังกฤษ(ผู้ป่วยรายเก่า)->https://www.surveymonkey.com/r/88CKJ5V
+                */
+                #endregion
+
+                if (OldNew.ToUpper().ToString() == "O")
+                {
+                    switch (nationCode.ToUpper())
+                    {
+                        case "TH":
+                            link = "https://www.surveymonkey.com/r/88Z3H23";
+                            break;
+                        default:
+                            link = "https://www.surveymonkey.com/r/88CKJ5V";
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (nationCode.ToUpper())
+                    {
+                        case "TH":
+                            link = "https://www.surveymonkey.com/r/8L7SHRP";
+                            break;
+                        default:
+                            link = "https://www.surveymonkey.com/r/887DDVC";
+                            break;
+                    }
+                }
+                #endregion
+            }
             else
             {
-                switch (nationCode.ToUpper())
+                #region svh link
+                #region Link for old patient 
+                if (OldNew.ToUpper().ToString() == "O")
                 {
-                    case "TH":
-                        link = " https://www.surveymonkey.com/r/G58GMKW";
-                        break;
-                    case "AR":
-                        link = "https://www.surveymonkey.com/r/7FWBZ3T";
-                        break;
-                    case "JP":
-                        link = "https://www.surveymonkey.com/r/DT5ZVRG";
-                        break;
-                    case "MR":
-                        link = "https://www.surveymonkey.com/r/V3XX8ZZ";
-                        break;
-                    case "CNSVH":
-                        link = "https://www.surveymonkey.com/r/KJNT8V6";
-                        break;
-                    case "CNSNH":
-                        link = "https://www.surveymonkey.com/r/KQ2YSSR";
-                        break;
-                    default:
-                        link = "https://www.surveymonkey.com/r/QX2VRSK";
-                        break;
+                    switch (nationCode.ToUpper())
+                    {
+                        case "TH":
+                            link = "https://www.surveymonkey.com/r/WCH72Q9";
+                            break;
+                        case "AR":
+                            link = "https://www.surveymonkey.com/r/7BDVXDF";
+                            break;
+                        case "JP":
+                            link = "https://www.surveymonkey.com/r/DTZKWB8";
+                            break;
+                        case "MR":
+                            link = "https://www.surveymonkey.com/r/V3PXPKD";
+                            break;
+                        case "CNSVH":
+                            link = "https://www.surveymonkey.com/r/KQL9RBM";
+                            break;
+                        case "CNSNH":
+                            link = "https://www.surveymonkey.com/r/KQWLBZZ";
+                            break;
+                        default:
+                            link = "https://www.surveymonkey.com/r/QXKV68J";
+                            break;
+                    }
                 }
+                #endregion
+                #region Link for new patient
+                else
+                {
+                    switch (nationCode.ToUpper())
+                    {
+                        case "TH":
+                            link = " https://www.surveymonkey.com/r/G58GMKW";
+                            break;
+                        case "AR":
+                            link = "https://www.surveymonkey.com/r/7FWBZ3T";
+                            break;
+                        case "JP":
+                            link = "https://www.surveymonkey.com/r/DT5ZVRG";
+                            break;
+                        case "MR":
+                            link = "https://www.surveymonkey.com/r/V3XX8ZZ";
+                            break;
+                        case "CNSVH":
+                            link = "https://www.surveymonkey.com/r/KJNT8V6";
+                            break;
+                        case "CNSNH":
+                            link = "https://www.surveymonkey.com/r/KQ2YSSR";
+                            break;
+                        default:
+                            link = "https://www.surveymonkey.com/r/QX2VRSK";
+                            break;
+                    }
+                }
+                #endregion
+                #endregion
             }
-            #endregion
+
+
+
+
             return link;
         }
         #endregion
